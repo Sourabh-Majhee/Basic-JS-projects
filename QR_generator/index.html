@@ -20,43 +20,53 @@
   </div>
 
   <script src="qrcode.js"></script>
-  <script>
-    let qrCanvas = document.getElementById("qrCanvas");
-    let qrText = document.getElementById("qrText");
+  
+<script>
+  let qrCanvas = document.getElementById("qrCanvas");
+  let qrText = document.getElementById("qrText");
 
-    function genQR() {
-      const text = qrText.value.trim();
-      if (!text) {
-        alert("Please enter text or URL");
-        return;
-      }
+  // 🆕 Add event listener for Enter key
+  qrText.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // prevent form submission or refresh
+      genQR(); // call QR generator
+    }
+  });
 
-      const ctx = qrCanvas.getContext("2d");
-      const qr = qrcode(0, 'L');
-      qr.addData(text);
-      qr.make();
-
-      const tileSize = 6;
-      const qrSize = qr.getModuleCount();
-      const canvasSize = tileSize * qrSize;
-
-      qrCanvas.width = qrCanvas.height = canvasSize;
-      ctx.clearRect(0, 0, canvasSize, canvasSize);
-
-      for (let row = 0; row < qrSize; row++) {
-        for (let col = 0; col < qrSize; col++) {
-          ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
-          ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
-        }
-      }
+  function genQR() {
+    const text = qrText.value.trim();
+    if (!text) {
+      alert("Please enter text or URL");
+      return;
     }
 
-    function downloadQR() {
-      const link = document.createElement("a");
-      link.download = "qr_code.png";
-      link.href = qrCanvas.toDataURL("image/png");
-      link.click();
+    const ctx = qrCanvas.getContext("2d");
+    const qr = qrcode(0, 'L');
+    qr.addData(text);
+    qr.make();
+
+    const tileSize = 6;
+    const qrSize = qr.getModuleCount();
+    const canvasSize = tileSize * qrSize;
+
+    qrCanvas.width = qrCanvas.height = canvasSize;
+    ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+    for (let row = 0; row < qrSize; row++) {
+      for (let col = 0; col < qrSize; col++) {
+        ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
+        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+      }
     }
-  </script>
+  }
+
+  function downloadQR() {
+    const link = document.createElement("a");
+    link.download = "qr_code.png";
+    link.href = qrCanvas.toDataURL("image/png");
+    link.click();
+  }
+</script>
+
 </body>
 </html>
