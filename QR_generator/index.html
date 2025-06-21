@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator!</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator!</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+  <div class="container">
+    <p>Enter Your text or URL</p>
+    <input type="text" placeholder="Text or URL" id="qrText">
+
+    <div id="imgBox">
+      <canvas id="qrCanvas"></canvas>
+    </div>
+
+    <button onclick="genQR()">Generate QR Code</button>
+    <button onclick="downloadQR()">Download QR Code</button>
+  </div>
+
+  <script src="qrcode.js"></script>
+  <script>
+    let qrCanvas = document.getElementById("qrCanvas");
+    let qrText = document.getElementById("qrText");
+
+    function genQR() {
+      const text = qrText.value.trim();
+      if (!text) {
+        alert("Please enter text or URL");
+        return;
+      }
+
+      const ctx = qrCanvas.getContext("2d");
+      const qr = qrcode(0, 'L');
+      qr.addData(text);
+      qr.make();
+
+      const tileSize = 6;
+      const qrSize = qr.getModuleCount();
+      const canvasSize = tileSize * qrSize;
+
+      qrCanvas.width = qrCanvas.height = canvasSize;
+      ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+      for (let row = 0; row < qrSize; row++) {
+        for (let col = 0; col < qrSize; col++) {
+          ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
+          ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+        }
+      }
+    }
+
+    function downloadQR() {
+      const link = document.createElement("a");
+      link.download = "qr_code.png";
+      link.href = qrCanvas.toDataURL("image/png");
+      link.click();
+    }
+  </script>
 </body>
 </html>
